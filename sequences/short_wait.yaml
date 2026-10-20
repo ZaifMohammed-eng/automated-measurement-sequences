@@ -1,0 +1,22 @@
+# Failure mode for comparison: optimized sweep, but a fixed 2 s temperature
+# wait that is shorter than the stage needs to settle (tau = 1 s, 1.5 K steps).
+name: resonator_vs_temperature_short_wait
+step_retries: 2
+config:
+  fg_vpp: 0.5
+  srat: 20000000.0
+  points: 2000
+  scales: [0.1, 0.1, 0.01]
+  f_start: 980000.0
+  f_stop: 1004000.0
+  temperatures_K: [3.0, 4.5, 6.0, 7.0]
+steps:
+  - {type: configure}
+  - type: for_each_temperature
+    steps:
+      - {type: set_temperature, wait: fixed, wait_s: 2.0}
+      - {type: sweep, mode: adaptive, coarse_points: 25, fine_points: 31,
+         fine_halfwidth_steps: 2.0, settle_ms: 2.0, binary: true, cache: true,
+         reference: once, sync: false}
+      - {type: fit_resonance}
+      - {type: check_limits, Q_min: 300, f0_se_max_Hz: 20}

@@ -1,0 +1,25 @@
+# Optimized: same measurement, same limits.
+# Stability-based temperature wait, settle time sized to the resonator
+# ring-down (Q / pi f0 ~ 0.5 ms), binary block transfers, no redundant
+# round trips, one reference measurement per sweep, adaptive frequency grid.
+name: resonator_vs_temperature_optimized
+step_retries: 2
+config:
+  fg_vpp: 0.5
+  srat: 20000000.0
+  points: 2000
+  scales: [0.1, 0.1, 0.01]
+  f_start: 980000.0
+  f_stop: 1004000.0
+  temperatures_K: [3.0, 4.5, 6.0, 7.0]
+steps:
+  - {type: health_check}
+  - {type: configure}
+  - type: for_each_temperature
+    steps:
+      - {type: set_temperature, wait: stable, tol_K: 0.005, window_s: 1.0, timeout_s: 30}
+      - {type: sweep, mode: adaptive, coarse_points: 25, fine_points: 31,
+         fine_halfwidth_steps: 2.0, settle_ms: 2.0, binary: true, cache: true,
+         reference: once, sync: false}
+      - {type: fit_resonance}
+      - {type: check_limits, Q_min: 300, f0_se_max_Hz: 20}

@@ -1,0 +1,1 @@
+{"time": 1792530551.3271763, "fg_selftest": 0, "fg_errors": [], "scope_selftest": 0, "scope_errors": [], "tc_selftest": 0, "tc_errors": [], "offset_before_V": 0.003973124999999999, "zero_cal_run": true, "offset_after_V": -1.2968749999999987e-05, "enob_bits": 6.708831194509937, "T_K": 3.0037, "passed": true}

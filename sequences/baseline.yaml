@@ -1,0 +1,23 @@
+# Baseline: how a first-pass script is usually written.
+# Fixed waits, *OPC? after every frequency step, ASCII transfers, the
+# reference channel re-measured at every point, a dense uniform sweep.
+name: resonator_vs_temperature_baseline
+step_retries: 2
+config:
+  fg_vpp: 0.5
+  srat: 20000000.0
+  points: 2000
+  scales: [0.1, 0.1, 0.01]
+  f_start: 980000.0
+  f_stop: 1004000.0
+  temperatures_K: [3.0, 4.5, 6.0, 7.0]
+steps:
+  - {type: health_check}
+  - {type: configure}
+  - type: for_each_temperature
+    steps:
+      - {type: set_temperature, wait: fixed, wait_s: 10.0}
+      - {type: sweep, mode: uniform, points: 201, settle_ms: 20, binary: false,
+         cache: false, reference: every_point, sync: true}
+      - {type: fit_resonance}
+      - {type: check_limits, Q_min: 300, f0_se_max_Hz: 20}
